@@ -1,0 +1,407 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Tạo trang chúc mừng</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <style>
+    *{box-sizing:border-box}[hidden]{display:none!important}
+    body{
+      margin:0;
+      min-height:100vh;
+      font:16px system-ui,sans-serif;
+      color:#e6edf3;
+      position:relative;
+      isolation:isolate;
+      background:#0a0c10;
+    }
+    body::before{
+      content:"";
+      position:fixed;
+      inset:0;
+      z-index:-2;
+      background:
+        linear-gradient(180deg,rgba(5,7,12,.45),rgba(10,13,20,.78)),
+        url("./anime-bg.jpg") center center/contain no-repeat fixed;
+      background-color: #0a0c10;
+    }
+
+    .w{max-width:640px;margin:0 auto;padding:16px 14px 110px;position:relative}
+    h1{font-size:20px;margin:6px 0 14px}
+    button{
+      font:inherit;border:0;border-radius:12px;padding:11px 16px;background:#238636;color:#fff;cursor:pointer;
+      box-shadow:0 4px 12px rgba(35,134,54,.25);
+      transition:transform .18s ease,filter .18s ease,box-shadow .18s ease;
+    }
+    button:hover{
+      filter:brightness(1.08);
+      transform:translateY(-1px);
+      box-shadow:0 6px 16px rgba(35,134,54,.35);
+    }
+    button:active{transform:scale(.98)}
+    button.g{background:#21262d;color:#c9d1d9;border:1px solid #30363d}
+    button:disabled{opacity:.6}
+
+    #login,#lv,#ed{
+      overflow:hidden;
+      border:1px solid #30363d;
+      border-radius:18px;
+      background:rgba(13,17,23,.88);
+      box-shadow:0 16px 40px rgba(0,0,0,.5);
+      backdrop-filter:blur(16px);
+      -webkit-backdrop-filter:blur(16px);
+    }
+    #login{
+      padding:28px 22px;
+      margin-top:15vh;
+    }
+    #lv,#ed{padding:16px}
+
+    .bar{
+      display:flex;gap:8px;align-items:center;justify-content:space-between;margin-bottom:12px;
+      position:relative;overflow:hidden;min-height:64px;padding:10px 12px;border:1px solid #30363d;border-radius:14px;
+      background:rgba(22,27,34,.9);
+    }
+    .bar h1{position:relative;z-index:1;color:#f0f6fc}
+    .bar button{position:relative;z-index:1}
+
+    .it{display:flex;align-items:center;gap:10px;background:rgba(22,27,34,.8);border:1px solid #30363d;border-radius:12px;padding:8px;margin-bottom:8px;transition:transform .18s ease,border-color .18s ease}
+    .it:hover{border-color:#8b949e;transform:translateY(-1px)}
+    .it img{width:52px;height:52px;border-radius:8px;object-fit:cover;background:#0d1117}
+    .it b{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#f0f6fc}
+    .it span{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+    .it button{padding:7px 10px;font-size:14px}
+
+    label{display:block;font-size:14px;margin:12px 0 4px;color:#c9d1d9}
+    input,textarea{
+      width:100%;font:inherit;font-size:16px;padding:11px;border:1px solid #30363d;border-radius:10px;background:#0d1117;color:#f0f6fc;
+    }
+    input:focus,textarea:focus{
+      outline:none;border-color:#58a6ff;box-shadow:0 0 0 3px rgba(88,166,255,.15);
+    }
+    textarea{min-height:120px}
+
+    .music-row{
+      display:flex;gap:8px;align-items:stretch;
+    }
+    .music-row input{min-width:0;flex:1}
+    .music-row button{white-space:nowrap}
+
+    .th{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+    .th div{position:relative;width:88px}
+    .th img{width:88px;height:88px;object-fit:cover;border-radius:8px;display:block;border:1px solid #30363d}
+    .th i{position:absolute;top:2px;right:2px;background:rgba(0,0,0,.7);color:#fff;border-radius:50%;width:22px;height:22px;text-align:center;font-style:normal;cursor:pointer}
+    .th s{display:flex;justify-content:space-between;text-decoration:none}
+    .th s u{text-decoration:none;cursor:pointer;padding:2px 8px;color:#58a6ff}
+
+    .fix{
+      position:fixed;left:0;right:0;bottom:0;background:rgba(13,17,23,.92);padding:10px 14px calc(10px + env(safe-area-inset-bottom));display:flex;gap:10px;box-shadow:0 -4px 20px rgba(0,0,0,.4);
+      border-top:1px solid #30363d;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+    }
+    .fix button{flex:1}
+
+    .ov{position:fixed;inset:0;z-index:9;background:#000}
+    .ov iframe{width:100%;height:100%;border:0}
+    .ov>button{position:absolute;top:10px;left:10px;z-index:2;background:#21262d;color:#c9d1d9;border:1px solid #30363d}
+    .md{position:fixed;inset:0;z-index:9;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;padding:14px}
+    .md>div{background:#161b22;border-radius:16px;padding:18px;width:100%;max-width:340px;text-align:center;border:1px solid #30363d;box-shadow:0 16px 40px rgba(0,0,0,.6);color:#f0f6fc}
+    #qrbox{background:#fff;padding:16px;display:inline-block;border-radius:8px}
+    #qrbox img{display:block}
+    #login{text-align:center;padding-top:20vh}
+
+    @media(max-width:600px){
+      #login{margin-top:12vh}
+      #lv,#ed{padding:12px}
+      .music-row{flex-direction:column}
+    }
+
+    .sw{width:34px;height:34px;border-radius:50%;border:2px solid rgba(255,255,255,.5);cursor:pointer;display:inline-block}
+    .cr{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:6px}
+    .cr input[type=color]{width:56px;height:42px;padding:2px;cursor:pointer}
+  </style>
+</head>
+<body>
+  <div id="login" class="w">
+    <h1 style="font-size: 18px; line-height: 1.5;">Tạo trang chúc mừng<br><span style="font-size: 13px; font-weight: normal; color: #8b949e;">(Chưa biết tạo link nhạc? Truy cập <a href="https://catbox.moe" target="_blank" style="color:#58a6ff">catbox.moe</a> để tải lên file mp3 và lấy link trực tiếp)</span></h1>
+    <button id="gin" style="margin-top: 20px;">Đăng nhập bằng Google để tiếp tục sử dụng</button>
+  </div>
+
+  <div id="app" class="w" hidden>
+    <div id="lv">
+      <div class="bar">
+        <h1 style="font-size: 16px;">Quản lý trang chúc mừng</h1>
+        <button id="out" class="g">Đăng xuất</button>
+      </div>
+      <button id="nw" style="width:100%;margin-bottom:12px">+ Tạo trang mới</button>
+
+      <div id="admin-sec" hidden>
+        <h2 style="font-size:16px;margin:16px 0 8px;color:#c9d1d9">Danh sách quản lý</h2>
+        <div id="list"></div>
+      </div>
+    </div>
+
+    <div id="ed" hidden>
+      <div class="bar">
+        <h1>Nhập thông tin trang</h1>
+        <button id="bk" class="g">Quay lại</button>
+      </div>
+
+      <label>Tên người nhận</label>
+      <input id="name" placeholder="Ví dụ: vtrongDze">
+
+      <label>Chữ mở đầu (dòng 1)</label>
+      <input id="l1" placeholder="Ví dụ: Chúc Mừng">
+
+      <label>Chữ mở đầu (dòng 2, sau đó là tên)</label>
+      <input id="l2" placeholder="">
+
+      <label>Chữ bay lên thứ nhất</label>
+      <input id="w1" placeholder="">
+
+      <label>Chữ bay lên thứ hai</label>
+      <input id="w2" placeholder="">
+
+      <label>Màu chữ bay</label>
+      <div class="cr">
+        <span class="sw" data-c="#b57bff" style="background:#b57bff"></span>
+        <span class="sw" data-c="#ff5ea8" style="background:#ff5ea8"></span>
+        <span class="sw" data-c="#ffd35a" style="background:#ffd35a"></span>
+        <span class="sw" data-c="#7fe3ff" style="background:#7fe3ff"></span>
+        <input id="tc" type="color" value="#ff5ea8">
+      </div>
+      <div id="tcs" style="margin-top:8px;font-size:22px;text-align:center">VtrongDze</div>
+
+      <label>Ảnh cho hiệu ứng hạt bụi (tối đa 6)</label>
+      <input id="fp" type="file" accept="image/*" multiple>
+      <div class="th" id="thp"></div>
+      <div style="font-size:12px;color:#8b949e;margin-top:4px">Đã chọn <span id="pcn">0</span>/6 ảnh hạt bụi</div>
+
+      <label>Ảnh cho quả cầu và ảnh bay (bắt buộc ít nhất 1 ảnh)</label>
+      <input id="fs" type="file" accept="image/*" multiple>
+      <div class="th" id="ths"></div>
+
+      <label>Tiêu đề thư</label>
+      <input id="lt" placeholder="Ví dụ: Gửi ....">
+
+      <label>Nội dung thư</label>
+      <textarea id="ll" placeholder="Nhập lời chúc ở đây..."></textarea>
+
+      <label>Link nhạc MP3 trực tiếp</label>
+      <div class="music-row">
+        <input id="music" type="url" inputmode="url" autocomplete="url" placeholder="https://...">
+        <button type="button" id="paste-music" class="g">Dán link</button>
+      </div>
+
+      <div class="fix">
+        <button id="pv" class="g">Xem trước</button>
+        <button id="sv">Lưu &amp; Tạo QR</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="pvw" class="ov" hidden>
+    <button id="pvx">Đóng</button>
+    <iframe id="fr" allow="autoplay"></iframe>
+  </div>
+
+  <div id="qr" class="md" hidden>
+    <div>
+      <h3 style="margin:0 0 10px">QR của trang</h3>
+      <div id="qrbox"></div>
+      <input id="qrl" readonly style="margin-top:10px;font-size:13px">
+      <div style="display:flex;gap:8px;margin-top:10px">
+        <button id="qcp" class="g" style="flex:1">Copy link</button>
+        <button id="qdl" style="flex:1">Tải QR</button>
+      </div>
+      <button id="qx" class="g" style="width:100%;margin-top:8px">Đóng</button>
+    </div>
+  </div>
+
+  <script type="module">
+    import{initializeApp}from'https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js';
+    import{getAuth,GoogleAuthProvider,signInWithPopup,onAuthStateChanged,signOut}from'https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js';
+    import{getFirestore,doc,getDoc,setDoc,deleteDoc,collection,getDocs,query,orderBy,serverTimestamp}from'https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js';
+
+    const FB={apiKey:"AIzaSyA-6kcQS-nHIM2t6zxioQ9HcZVI8fCmj34",authDomain:"sinhnhat-all.firebaseapp.com",projectId:"sinhnhat-all",storageBucket:"sinhnhat-all.firebasestorage.app",messagingSenderId:"642882344264",appId:"1:642882344264:web:5b857623cc3a566fc98f7d"};
+    const OWNER='vtrong123ttt@gmail.com';
+
+    const app=initializeApp(FB),auth=getAuth(app),db=getFirestore(app),$=i=>document.getElementById(i),pad=i=>String(i).padStart(3,'0');
+    const F=['name','l1','l2','lt','music'];
+    let cur={id:null,n:0,photos:[],np:0};
+    const esc=t=>String(t||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+    $('paste-music').onclick=async()=>{
+      try{
+        const text=await navigator.clipboard.readText();
+        if(!text.trim())return alert('Clipboard chưa có link. Hãy copy link MP3 trước.');
+        $('music').value=text.trim();
+      }catch{
+        $('music').focus();
+        alert('Trình duyệt chưa cho phép dán tự động. Hãy copy link MP3 rồi bấm Ctrl+V hoặc thao tác dán trên mobile.');
+      }
+    };
+
+    $('gin').onclick=()=>signInWithPopup(auth,new GoogleAuthProvider()).catch(e=>alert('Đăng nhập lỗi: '+e.code));
+    $('out').onclick=()=>signOut(auth);
+
+    onAuthStateChanged(auth, u => {
+      const loggedIn = !!u;
+      $('login').hidden = loggedIn;
+      $('app').hidden = !loggedIn;
+
+      if (loggedIn) {
+        const isAdmin = u.email === OWNER;
+        $('admin-sec').hidden = !isAdmin;
+        if (isAdmin) loadList();
+      }
+    });
+
+    function show(ed){$('lv').hidden=ed;$('ed').hidden=!ed;scrollTo(0,0)}
+    
+    function fill(c){
+      F.forEach(k=>$(k).value=c[k]||'');
+      $('ll').value=(c.ll||[]).join('\n');
+      const tlArr = c.tl || [];
+      $('w1').value = tlArr[0] || '';
+      $('w2').value = tlArr[1] || '';
+      $('tc').value=c.tc||'#ff5ea8';sc();
+      thumbs();
+    }
+
+    function rd(){
+      const c={};
+      F.forEach(k=>c[k]=$(k).value.trim());
+      c.ll=$('ll').value.replace(/\s+$/,'').split('\n');
+      if(c.ll.length==1&&!c.ll[0])c.ll=[];
+      
+      const w1 = $('w1').value.trim();
+      const w2 = $('w2').value.trim();
+      c.tl = [w1, w2].filter(Boolean);
+      c.tc=$('tc').value;c.np=cur.np;
+      
+      return c;
+    }
+
+    function thumbs(){
+      [['thp',0,cur.np],['ths',cur.np,cur.photos.length]].forEach(([id,a,b])=>{
+        const t=$(id);t.innerHTML='';
+        for(let i=a;i<b;i++){
+          const e=document.createElement('div');
+          e.innerHTML=`<img src="${cur.photos[i]}"><i data-d="${i}">✕</i><s><u data-m="${i}" data-v="-1">◀</u><u data-m="${i}" data-v="1">▶</u></s>`;
+          t.appendChild(e);
+        }
+      });
+      $('pcn').textContent=cur.np;
+    }
+    const thClick=lo=>e=>{
+      const a=e.target.dataset,L=cur.photos;
+      if(a.d!==undefined){
+        const idx=+a.d;
+        L.splice(idx,1);
+        if(lo==0)cur.np--;
+        else if(idx<cur.np)cur.np--;
+      }
+      else if(a.m!==undefined){
+        const i=+a.m,j=i+ +a.v,A=lo==0?0:cur.np,B=lo==0?cur.np:L.length;
+        if(j<A||j>=B)return;
+        [L[i],L[j]]=[L[j],L[i]];
+      } else return;
+      thumbs();
+    };
+    $('thp').onclick=thClick(0);$('ths').onclick=thClick(1);
+
+    const addPhotos=g=>async e=>{
+      const fs=[...e.target.files];e.target.value='';
+      for(const f of fs){
+        try{
+          // Tăng độ phân giải nén từ 900 lên 1400 để ảnh siêu nét
+          const d=shrink(await loadImg(f),1400,.92);
+          if(g==0){if(cur.np>=6){alert('Tối đa 6 ảnh hạt bụi');break}cur.photos.splice(cur.np,0,d);cur.np++}
+          else cur.photos.push(d);
+        }catch(x){alert('Không đọc được ảnh: '+f.name)}
+      }
+      thumbs();
+    };
+    $('fp').onchange=addPhotos(0);$('fs').onchange=addPhotos(1);
+    const sc=()=>{const v=$('tc').value;$('tcs').style.color=v;$('tcs').style.textShadow='0 0 10px '+v};
+    $('tc').oninput=sc;
+    document.querySelectorAll('.sw').forEach(s=>s.onclick=()=>{$('tc').value=s.dataset.c;sc()});
+
+    const loadImg=f=>new Promise((res,rej)=>{const im=new Image(),u=URL.createObjectURL(f);im.onload=()=>{URL.revokeObjectURL(u);res(im)};im.onerror=rej;im.src=u});
+    function shrink(im,m,q){const k=Math.min(1,m/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=Math.max(1,im.width*k|0);c.height=Math.max(1,im.height*k|0);c.getContext('2d').drawImage(im,0,0,c.width,c.height);let d=c.toDataURL('image/jpeg',q);while(d.length>800000&&q>.5){q-=.05;d=c.toDataURL('image/jpeg',q)}return d}
+
+    $('nw').onclick=()=>{cur={id:null,n:0,photos:[],np:0};fill({});show(1)};
+    $('bk').onclick=()=>show(0);
+
+    async function openPage(id,clone){const d=await getDoc(doc(db,'pages',id));if(!d.exists())return alert('Trang không còn tồn tại');const m=d.data();
+      const ph=await Promise.all([...Array(m.n)].map((_,i)=>getDoc(doc(db,'pages',id,'photos',pad(i))).then(x=>x.data().d)));
+      cur={id:clone?null:id,n:clone?0:m.n,photos:ph,np:Number.isInteger(m.cfg.np)?m.cfg.np:0};const c={...m.cfg};if(clone)c.name='';fill(c);show(1)
+    }
+
+    async function loadList(){
+      const s=await getDocs(query(collection(db,'pages'),orderBy('updated','desc'))),L=$('list');L.innerHTML='';
+      s.forEach(d=>{
+        const m=d.data(),e=document.createElement('div');
+        e.className='it';
+        e.innerHTML=`<img src="${m.thumb||''}"><b>${esc(m.name)}</b><span><button data-a="e">Sửa</button><button class="g" data-a="c">Nhân bản</button><button class="g" data-a="q">QR</button><button class="g" data-a="x">Xóa</button></span>`;
+        e.onclick=async ev=>{
+          const a=ev.target.dataset.a;
+          if(a=='e')openPage(d.id,0);
+          if(a=='c')openPage(d.id,1);
+          if(a=='q')showQR(d.id,m.name);
+          if(a=='x'&&confirm('Xóa trang '+m.name+'?')){
+            for(let i=0;i<m.n;i++)await deleteDoc(doc(db,'pages',d.id,'photos',pad(i)));
+            await deleteDoc(doc(db,'pages',d.id));
+            loadList();
+          }
+        };
+        L.appendChild(e);
+      });
+      if(!s.size)L.textContent='Chưa có trang nào.'
+    }
+
+    function idbPut(v){return new Promise((res,rej)=>{const o=indexedDB.open('bdp',1);o.onupgradeneeded=()=>o.result.createObjectStore('k');o.onerror=()=>rej(o.error);o.onsuccess=()=>{const t=o.result.transaction('k','readwrite');t.objectStore('k').put(v,'cfg');t.oncomplete=()=>res();t.onerror=()=>rej(t.error)}})}
+    
+    $('pv').onclick=async()=>{
+      if(!cur.photos.length)return alert('Bắt buộc phải thêm ít nhất 1 ảnh để xem trước!');
+      const phone=matchMedia('(pointer:coarse)').matches||innerWidth<700,w=phone?window.open('about:blank','_blank'):null,tok=Math.random().toString(36).slice(2)+Date.now().toString(36);
+      try{await idbPut({tok,exp:Date.now()+60000,cfg:{...rd(),photos:cur.photos}})}catch(e){if(w)w.close();return alert('Không tạo được xem trước')}
+      const u='index.html?preview=idb&k='+tok;
+      if(w){w.location.href=u}else{$('pvw').hidden=false;$('fr').src=u}
+    };
+    $('pvx').onclick=()=>{$('pvw').hidden=true;$('fr').src='about:blank'};
+
+    const rid=()=>Array.from(crypto.getRandomValues(new Uint8Array(8)),b=>(b%36).toString(36)).join('');
+    $('sv').onclick=async()=>{
+      if(!cur.photos.length)return alert('Bắt buộc phải thêm ít nhất 1 ảnh để lưu!');
+      const c=rd(),b=$('sv');b.disabled=true;b.textContent='Đang lưu...';
+      try{
+        const id=cur.id||rid(),t=await new Promise(r=>{const im=new Image();im.onload=()=>r(shrink(im,120,.8));im.src=cur.photos[0]});
+        await Promise.all(cur.photos.map((d,i)=>setDoc(doc(db,'pages',id,'photos',pad(i)),{d})));
+        for(let i=cur.photos.length;i<cur.n;i++)await deleteDoc(doc(db,'pages',id,'photos',pad(i)));
+        await setDoc(doc(db,'pages',id),{cfg:c,n:cur.photos.length,name:c.name||'Chưa đặt tên',thumb:t,updated:serverTimestamp()});
+        cur.id=id;cur.n=cur.photos.length;showQR(id,c.name);
+        if(auth.currentUser&&auth.currentUser.email===OWNER) loadList();
+      }catch(e){alert('Lưu lỗi: '+e.message)}
+      b.disabled=false;b.textContent='Lưu & Tạo QR'
+    };
+
+    let qn='';
+    function showQR(id,name){
+      qn=name||'trang';
+      const pageUrl=new URL('index.html',location.href);
+      pageUrl.searchParams.set('id',id);
+      const link=pageUrl.href;
+      const b=$('qrbox');
+      $('qrl').value=link;
+      b.innerHTML='';
+      new QRCode(b,{text:link,width:256,height:256,correctLevel:QRCode.CorrectLevel.M});
+      $('qr').hidden=false;
+    }
+    $('qx').onclick=()=>{$('qr').hidden=true;};
+    $('qcp').onclick=()=>{$('qrl').select();navigator.clipboard?navigator.clipboard.writeText($('qrl').value):document.execCommand('copy');$('qcp').textContent='Đã copy'; setTimeout(()=>$('qcp').textContent='Copy link',1500)};
+    $('qdl').onclick=()=>{const s=$('qrbox').querySelector('canvas'),c=document.createElement('canvas');c.width=c.height=s.width+80;const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);x.drawImage(s,40,40);const a=document.createElement('a');a.href=c.toDataURL('image/png');a.download='qr-'+qn.replace(/[^\w\u00C0-\u1EF9]+/g,'-')+'.png';a.click()};
+  </script>
+</body>
+</html>
